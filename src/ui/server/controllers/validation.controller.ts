@@ -97,16 +97,21 @@ class DefaultValidationController implements ValidationController {
 
         return sampleCollection.samples.map((sample: Sample) => {
             const errors: ErrorResponseDTO = {};
-
+            const errorArray: number[] = [];
             _.forEach(sample.getErrors(), (e, i) => {
-                errors[i] = e.map(f => ({
-                    code: f.code,
-                    level: f.level,
-                    message: f.message
-                }));
+                errors[i] = e.map(f => {
+                    errorArray.push(f.code);
+                    return {
+                        code: f.code,
+                        level: f.level,
+                        message: f.message
+                    };
+                });
             });
+            const data = sample.getData();
+            data.comment = errorArray.toString();
             return {
-                data: sample.getData(),
+                data: data,
                 errors: errors,
                 corrections: sample.correctionSuggestions,
                 edits: sample.edits
